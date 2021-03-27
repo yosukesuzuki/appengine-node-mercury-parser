@@ -6,13 +6,18 @@ const express = require("express");
 const app = express();
 
 const Mercury = require("@postlight/mercury-parser");
+const validUrl = require("valid-url");
 
-app.get("/web/parse/article", (req, res) => {
+app.get("/parse", (req, res) => {
   const url = req.query.url;
-  console.log(url);
-  Mercury.parse(url).then((result) => {
-    return res.json(result);
-  });
+  if (validUrl.isUri(url)) {
+    Mercury.parse(url).then((result) => {
+      return res.json(result);
+    });
+  } else {
+    res.status(400);
+    res.json({ error: "The url is invalid" });
+  }
 });
 
 // Start the server
